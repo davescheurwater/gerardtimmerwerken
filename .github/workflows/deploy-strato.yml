@@ -36,6 +36,6 @@ jobs:
           username: ${{ secrets.STRATO_USERNAME }}
           password: ${{ secrets.STRATO_PASSWORD }}
           protocol: ftps
-          port: 21
+          port: 22
           local-dir: dist/
           server-dir: /
