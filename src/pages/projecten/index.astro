@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const projects = await getCollection('projects');
+const projectSlug = (id: string) => id.replace(/\.mdx?$/, '');
+---
+
+<BaseLayout
+	title="Projecten | Gerard Timmerwerken"
+	description="Bekijk afgeronde timmerprojecten van Gerard Timmerwerken."
+>
+	<section class="page-intro">
+		<p class="eyebrow">Projecten</p>
+		<h1>Voorbeelden van recent timmerwerk</h1>
+		<p>
+			Per project zie je wat er is uitgevoerd en hoe het eindresultaat eruitziet. Zo krijg je een
+			goed beeld van stijl en afwerking.
+		</p>
+	</section>
+
+	<section class="grid-3 section">
+		{projects.map((project) => (
+			<article class="project-card reveal">
+				<img src={project.data.cover} alt={project.data.title} loading="lazy" />
+				<div>
+					<h2>{project.data.title}</h2>
+					<p>{project.data.excerpt}</p>
+					<p>{project.data.region} · {project.data.year}</p>
+					<a href={`/projecten/${projectSlug(project.id)}`}>Lees project</a>
+				</div>
+			</article>
+		))}
+	</section>
+</BaseLayout>

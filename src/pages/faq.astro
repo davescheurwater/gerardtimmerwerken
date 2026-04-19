@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const faqs = [
+	{
+		q: 'In welke regio werk je?',
+		a: 'Ik werk vooral in en rondom Gemeente Altena, met klussen in onder andere Gorinchem, Hardinxveld-Giessendam, Geertruidenberg, Dongen, Oosterhout en Waalwijk.',
+	},
+	{
+		q: 'Hoe vraag ik een offerte aan?',
+		a: 'Via de offertepagina kun je direct jouw gegevens en klusinformatie invullen. Je mag ook eerst via WhatsApp contact opnemen.',
+	},
+	{
+		q: 'Doe je ook kleinere timmerklussen?',
+		a: 'Ja, zowel kleinere afwerkkussen als grotere verbouwingen zijn mogelijk. Ik kijk altijd naar een praktische planning.',
+	},
+	{
+		q: 'Kan ik foto’s van mijn situatie meesturen?',
+		a: 'Ja, bij het offerteformulier kun je foto’s of een bestand toevoegen. Dat helpt om sneller een goede inschatting te maken.',
+	},
+];
+---
+
+<BaseLayout title="FAQ | Gerard Timmerwerken" description="Veelgestelde vragen over werkwijze, regio en offerteaanvragen.">
+	<section class="page-intro">
+		<p class="eyebrow">FAQ</p>
+		<h1>Veelgestelde vragen</h1>
+		<p>Snel antwoord op de vragen die ik vaak krijg over aanpak, planning en regio.</p>
+	</section>
+
+	<section class="faq-list section">
+		{faqs.map((item) => (
+			<article class="info-block reveal">
+				<h2>{item.q}</h2>
+				<p>{item.a}</p>
+			</article>
+		))}
+	</section>
+</BaseLayout>

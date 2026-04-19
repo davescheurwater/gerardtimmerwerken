@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { services } from '../../data/services';
+---
+
+<BaseLayout
+	title="Diensten | Gerard Timmerwerken"
+	description="Overzicht van alle timmerdiensten van Gerard Timmerwerken in regio Altena en omgeving."
+>
+	<section class="page-intro">
+		<p class="eyebrow">Diensten</p>
+		<h1>Timmerwerk voor renovatie, afwerking en maatwerk</h1>
+		<p>
+			Elke klus is anders. Daarom werk ik met duidelijke afspraken en een aanpak die past bij jouw
+			ruimte en planning.
+		</p>
+	</section>
+
+	<section class="service-list section">
+		{services.map((service) => (
+			<article class="service-item reveal">
+				<h2>{service.title}</h2>
+				<p>{service.summary}</p>
+				<a href={`/diensten/${service.slug}`}>Bekijk dienst</a>
+			</article>
+		))}
+	</section>
+</BaseLayout>

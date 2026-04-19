@@ -1,0 +1,31 @@
+---
+import { siteConfig } from '../data/site';
+
+const navItems = [
+	{ href: '/', label: 'Home' },
+	{ href: '/over-mij', label: 'Over mij' },
+	{ href: '/diensten', label: 'Diensten' },
+	{ href: '/projecten', label: 'Projecten' },
+	{ href: '/faq', label: 'FAQ' },
+	{ href: '/contact', label: 'Contact' },
+];
+---
+
+<header class="site-header">
+	<div class="container header-inner">
+		<a class="logo" href="/">
+			<span>GT</span>
+			Gerard Timmerwerken
+		</a>
+		<nav aria-label="Hoofdmenu">
+			<ul>
+				{navItems.map((item) => (
+					<li>
+						<a href={item.href}>{item.label}</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+		<a class="btn header-btn" href={`https://wa.me/${siteConfig.whatsapp}`}>WhatsApp</a>
+	</div>
+</header>

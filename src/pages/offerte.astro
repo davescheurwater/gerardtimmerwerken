@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { services } from '../data/services';
+---
+
+<BaseLayout
+	title="Offerte aanvragen | Gerard Timmerwerken"
+	description="Vraag vrijblijvend een offerte aan bij Gerard Timmerwerken."
+>
+	<section class="page-intro">
+		<p class="eyebrow">Offerte</p>
+		<h1>Vraag een vrijblijvende offerte aan</h1>
+		<p>
+			Vul je gegevens in en beschrijf je klus zo duidelijk mogelijk. Dan kan ik snel een passende
+			inschatting maken.
+		</p>
+	</section>
+
+	<section class="section">
+		<article class="info-block reveal">
+			<form action="https://formspree.io/f/your-form-id" method="POST" enctype="multipart/form-data">
+				<input type="hidden" name="_subject" value="Nieuwe offerteaanvraag - Gerard Timmerwerken" />
+				<input type="hidden" name="_next" value="/bedankt" />
+				<label>
+					Naam
+					<input type="text" name="naam" required />
+				</label>
+				<label>
+					E-mail
+					<input type="email" name="email" required />
+				</label>
+				<label>
+					Telefoon
+					<input type="tel" name="telefoon" required />
+				</label>
+				<label>
+					Postcode / Plaats
+					<input type="text" name="regio" required />
+				</label>
+				<label>
+					Type klus
+					<select name="type_klus" required>
+						<option value="">Kies een dienst</option>
+						{services.map((service) => <option value={service.title}>{service.title}</option>)}
+					</select>
+				</label>
+				<label>
+					Gewenste startperiode
+					<input type="text" name="startperiode" placeholder="Bijv. mei-juni 2026" />
+				</label>
+				<label>
+					Indicatiebudget (optioneel)
+					<input type="text" name="budget" placeholder="Bijv. €2.500 - €5.000" />
+				</label>
+				<label>
+					Omschrijving klus
+					<textarea name="omschrijving" rows="6" required></textarea>
+				</label>
+				<label>
+					Foto/bestand toevoegen (optioneel)
+					<input type="file" name="bijlage" />
+				</label>
+				<label>
+					<input type="checkbox" name="privacy-akkoord" required />
+					Ik ga akkoord met de verwerking van mijn gegevens volgens de privacyverklaring.
+				</label>
+				<p>
+					Vervang eerst de placeholder <strong>your-form-id</strong> met je eigen Formspree-formulier-ID.
+				</p>
+				<button class="btn" type="submit">Offerte versturen</button>
+			</form>
+		</article>
+	</section>
+</BaseLayout>

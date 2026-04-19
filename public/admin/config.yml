@@ -1,0 +1,30 @@
+backend:
+  name: git-gateway
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "projects"
+    label: "Projecten"
+    folder: "src/content/projects"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Titel", name: "title", widget: "string" }
+      - { label: "Korte samenvatting", name: "excerpt", widget: "text" }
+      - { label: "Categorie", name: "category", widget: "string" }
+      - { label: "Regio", name: "region", widget: "string" }
+      - { label: "Jaar", name: "year", widget: "number", value_type: "int", min: 2020, max: 2035 }
+      - { label: "Coverfoto", name: "cover", widget: "image" }
+      - { label: "Galerij", name: "gallery", widget: "list", field: { label: "Afbeelding", name: "image", widget: "image" } }
+      - { label: "Uitgelicht op home", name: "featured", widget: "boolean", default: false }
+      - {
+          label: "Dienst",
+          name: "serviceSlug",
+          widget: "select",
+          required: false,
+          options:
+            ["kozijnen", "aftimmering", "hang-en-sluitwerk", "plafonds", "scheidingswanden", "verbouwingen", "maatwerk"],
+        }
+      - { label: "Inhoud", name: "body", widget: "markdown" }

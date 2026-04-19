@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../data/site';
+---
+
+<BaseLayout
+	title="Contact | Gerard Timmerwerken"
+	description="Neem contact op met Gerard Timmerwerken via WhatsApp, telefoon, e-mail of formulier."
+>
+	<section class="page-intro">
+		<p class="eyebrow">Contact</p>
+		<h1>Makkelijk bereikbaar voor jouw klus</h1>
+		<p>
+			Stel je vraag via WhatsApp, bel direct of gebruik het formulier. Je krijgt snel een reactie.
+		</p>
+	</section>
+
+	<section class="split section">
+		<article class="info-block reveal">
+			<h2>Direct contact</h2>
+			<ul>
+				<li><a href={`https://wa.me/${siteConfig.whatsapp}`}>WhatsApp sturen</a></li>
+				<li><a href={`tel:${siteConfig.phone}`}>{siteConfig.phoneLabel}</a></li>
+				<li><a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a></li>
+				<li><a href={siteConfig.instagramUrl}>Instagram</a></li>
+			</ul>
+			<p><a class="btn" href="/offerte">Naar offerteformulier</a></p>
+		</article>
+
+		<article class="info-block reveal">
+			<h2>Contactformulier</h2>
+			<form action="https://formspree.io/f/your-form-id" method="POST">
+				<input type="hidden" name="_next" value="/bedankt" />
+				<label>
+					Naam
+					<input type="text" name="naam" required />
+				</label>
+				<label>
+					E-mail
+					<input type="email" name="email" required />
+				</label>
+				<label>
+					Bericht
+					<textarea name="bericht" rows="5" required></textarea>
+				</label>
+				<p>
+					Vervang eerst de placeholder <strong>your-form-id</strong> met je eigen Formspree-formulier-ID.
+				</p>
+				<button class="btn" type="submit">Versturen</button>
+			</form>
+		</article>
+	</section>
+</BaseLayout>

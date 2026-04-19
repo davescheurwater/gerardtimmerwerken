@@ -1,0 +1,34 @@
+---
+import { siteConfig } from '../data/site';
+---
+
+<footer class="site-footer">
+	<div class="container footer-grid">
+		<div>
+			<h3>{siteConfig.companyName}</h3>
+			<p>
+				Voor maatwerk timmerwerk, verbouwingen en nette afwerking in en rondom Gemeente
+				Altena.
+			</p>
+		</div>
+		<div>
+			<h3>Bereikbaarheid</h3>
+			<ul>
+				<li><a href={`https://wa.me/${siteConfig.whatsapp}`}>WhatsApp</a></li>
+				<li><a href={`tel:${siteConfig.phone}`}>{siteConfig.phoneLabel}</a></li>
+				<li><a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a></li>
+				<li><a href={siteConfig.instagramUrl}>Instagram</a></li>
+			</ul>
+		</div>
+		<div>
+			<h3>Werkgebied</h3>
+			<p>{siteConfig.regions.join(', ')}</p>
+		</div>
+	</div>
+	<div class="container footer-bottom">
+		<p>© {new Date().getFullYear()} {siteConfig.companyName}</p>
+		<p>
+			<a href="/privacy">Privacy & Cookies</a>
+		</p>
+	</div>
+</footer>

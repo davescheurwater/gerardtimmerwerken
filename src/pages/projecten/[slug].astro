@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+	const projects = await getCollection('projects');
+	return projects.map((project) => ({
+		params: { slug: project.id.replace(/\.mdx?$/, '') },
+		props: { project },
+	}));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+---
+
+<BaseLayout title={`${project.data.title} | Gerard Timmerwerken`} description={project.data.excerpt}>
+	<section class="page-intro">
+		<p class="eyebrow">Project</p>
+		<h1>{project.data.title}</h1>
+		<p>{project.data.region} · {project.data.year} · {project.data.category}</p>
+	</section>
+
+	<section class="split section">
+		<article class="info-block reveal">
+			<img src={project.data.cover} alt={project.data.title} style="width:100%;border-radius:.8rem;" />
+		</article>
+		<article class="info-block reveal">
+			<Content />
+			<p><a class="btn" href="/offerte">Ook zo'n project? Vraag offerte aan</a></p>
+		</article>
+	</section>
+
+	<section class="section">
+		<h2>Fotogalerij</h2>
+		<div class="grid-3">
+			{project.data.gallery.map((image) => (
+				<img src={image} alt={project.data.title} class="project-gallery-image" loading="lazy" />
+			))}
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.project-gallery-image {
+		width: 100%;
+		height: 200px;
+		object-fit: cover;
+		border-radius: 0.8rem;
+		border: 1px solid rgba(17, 52, 35, 0.1);
+	}
+</style>

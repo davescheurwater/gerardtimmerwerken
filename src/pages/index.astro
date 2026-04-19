@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { services } from '../data/services';
+import { siteConfig } from '../data/site';
+import { getCollection } from 'astro:content';
+
+const featuredProjects = (await getCollection('projects'))
+	.filter((item) => item.data.featured)
+	.slice(0, 3);
+
+const projectSlug = (id: string) => id.replace(/\.mdx?$/, '');
+---
+
+<BaseLayout
+	title="Gerard Timmerwerken | Vakmanschap op maat"
+	description="Gerard Timmerwerken uit regio Altena voor kozijnen, aftimmering, plafonds, wanden, verbouwingen en maatwerk timmerwerk."
+>
+	<section class="hero">
+		<div class="hero-inner">
+			<div class="hero-copy">
+				<p class="eyebrow">Gerard Timmerwerken</p>
+				<h1>Strak timmerwerk, persoonlijk uitgevoerd.</h1>
+				<p>
+					Van idee tot afwerking: ik help je met duurzame oplossingen voor jouw woning of
+					bedrijfspand.
+				</p>
+				<div class="actions-row">
+					<a class="btn" href="/offerte">Offerte aanvragen</a>
+					<a class="btn btn-secondary" href={`https://wa.me/${siteConfig.whatsapp}`}>WhatsApp</a>
+				</div>
+			</div>
+		</div>
+	</section>
+
+
+	<section class="section">
+		<div class="section-head">
+			<h2>Diensten</h2>
+			<a href="/diensten">Bekijk alle diensten</a>
+		</div>
+		<div class="grid-3">
+			{services.slice(0, 6).map((service) => (
+				<article class="card reveal">
+					<h3>{service.title}</h3>
+					<p>{service.summary}</p>
+					<a href={`/diensten/${service.slug}`}>Meer over {service.title}</a>
+				</article>
+			))}
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="section-head">
+			<h2>Uitgelichte projecten</h2>
+			<a href="/projecten">Alle projecten</a>
+		</div>
+		<div class="grid-3">
+			{featuredProjects.map((project) => (
+				<article class="project-card reveal">
+					<img src={project.data.cover} alt={project.data.title} loading="lazy" />
+					<div>
+						<h3>{project.data.title}</h3>
+						<p>{project.data.excerpt}</p>
+						<a href={`/projecten/${projectSlug(project.id)}`}>Bekijk project</a>
+					</div>
+				</article>
+			))}
+		</div>
+	</section>
+	
+	<section class="region-section section">
+		<div class="section-head">
+			<h2>Werkgebied</h2>
+			<a href="/contact">Neem contact op</a>
+		</div>
+		<div class="region-card">
+			<p>Gerard werkt in de regio rondom Altena en de omliggende plaatsen. Voor een snelle afspraak en een scherpe offerte kun je hieronder direct contact opnemen.</p>
+			<ul class="region-list">
+				{siteConfig.regions.map((region) => <li>{region}</li>)}
+			</ul>
+		</div>
+	</section>
+
+	<section class="cta-strip reveal">
+		<h2>Klaar om jouw klus te bespreken?</h2>
+		<p>
+			Stuur een bericht via WhatsApp of vraag direct een offerte aan. Je krijgt snel een
+			heldere reactie.
+		</p>
+		<div class="actions-row">
+			<a class="btn" href="/offerte">Offerte aanvragen</a>
+			<a class="btn btn-secondary" href="/contact">Contact opnemen</a>
+		</div>
+	</section>
+</BaseLayout>

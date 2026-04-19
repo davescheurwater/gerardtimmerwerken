@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { services } from '../../data/services';
+import { getCollection } from 'astro:content';
+
+export function getStaticPaths() {
+	return services.map((service) => ({
+		params: { slug: service.slug },
+		props: { service },
+	}));
+}
+
+const { service } = Astro.props;
+const relatedProjects = (await getCollection('projects')).filter(
+	(item) => item.data.serviceSlug === service.slug,
+);
+const projectSlug = (id: string) => id.replace(/\.mdx?$/, '');
+---
+
+<BaseLayout
+	title={`${service.title} | Gerard Timmerwerken`}
+	description={`${service.title} door Gerard Timmerwerken in regio Altena en omgeving.`}
+>
+	<section class="page-intro">
+		<p class="eyebrow">Dienst</p>
+		<h1>{service.title}</h1>
+		<p>{service.summary}</p>
+	</section>
+
+	<section class="split section">
+		<article class="info-block reveal">
+			<h2>Wat je kunt verwachten</h2>
+			<ul>
+				{service.details.map((detail) => <li>{detail}</li>)}
+			</ul>
+			<p><a class="btn" href="/offerte">Vraag een offerte aan</a></p>
+		</article>
+
+		<article class="info-block reveal">
+			<h2>Gerelateerde projecten</h2>
+			{relatedProjects.length > 0 ? (
+				<ul>
+					{relatedProjects.map((project) => (
+						<li><a href={`/projecten/${projectSlug(project.id)}`}>{project.data.title}</a></li>
+					))}
+				</ul>
+			) : (
+				<p>Binnenkort plaatsen we hier voorbeelden van afgeronde klussen.</p>
+			)}
+		</article>
+	</section>
+</BaseLayout>
