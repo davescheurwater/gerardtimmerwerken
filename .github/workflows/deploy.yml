@@ -78,12 +78,12 @@ jobs:
 
           printf '%s\n' 'put -r ./dist/* .' > "$RUNNER_TEMP/sftp_batch"
           sshpass -e sftp \
-            -b "$RUNNER_TEMP/sftp_batch" \
-            -P 22 \
             -o BatchMode=no \
             -o PreferredAuthentications=password,keyboard-interactive \
             -o PubkeyAuthentication=no \
             -o StrictHostKeyChecking=yes \
             -o UserKnownHostsFile="$RUNNER_TEMP/strato_known_hosts" \
             -o ConnectTimeout=20 \
+            -P 22 \
+            -b "$RUNNER_TEMP/sftp_batch" \
             "$STRATO_SFTP_USERNAME@$STRATO_SFTP_SERVER"
