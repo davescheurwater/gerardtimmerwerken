@@ -453,6 +453,10 @@ h2 {
 	box-shadow: var(--shadow);
 }
 
+.cookie-banner[hidden] {
+	display: none;
+}
+
 .cookie-banner h2,
 .cookie-banner p {
 	margin: 0;
