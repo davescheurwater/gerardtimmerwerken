@@ -14,10 +14,38 @@ const navItems = [
 <header class="site-header">
 	<div class="container header-inner">
 		<a class="logo" href="/">
-			<span>GT</span>
-			Gerard Timmerwerken
+			<img
+				src="/images/branding/only_logo.svg"
+				alt=""
+				class="logo-mark"
+				width="116"
+				height="94"
+				loading="eager"
+				decoding="async"
+			/>
+			<img
+				src="/images/branding/only_tekst.svg"
+				alt="Willemstein Timmerwerken"
+				class="logo-wordmark"
+				loading="eager"
+				decoding="async"
+			/>
 		</a>
-		<nav aria-label="Hoofdmenu">
+		<button
+			type="button"
+			class="menu-toggle"
+			data-menu-toggle
+			aria-controls="site-nav"
+			aria-expanded="false"
+			aria-label="Open menu"
+		>
+			<span class="menu-toggle-lines" aria-hidden="true">
+				<span class="menu-toggle-bar"></span>
+				<span class="menu-toggle-bar"></span>
+				<span class="menu-toggle-bar"></span>
+			</span>
+		</button>
+		<nav id="site-nav" class="site-nav" aria-label="Hoofdmenu">
 			<ul>
 				{navItems.map((item) => (
 					<li>
@@ -25,7 +53,59 @@ const navItems = [
 					</li>
 				))}
 			</ul>
+			<a class="btn header-btn header-btn-mobile" href={`https://wa.me/${siteConfig.whatsapp}`}>WhatsApp</a>
 		</nav>
-		<a class="btn header-btn" href={`https://wa.me/${siteConfig.whatsapp}`}>WhatsApp</a>
+		<a class="btn header-btn header-btn-desktop" href={`https://wa.me/${siteConfig.whatsapp}`}>WhatsApp</a>
 	</div>
 </header>
+
+<script is:inline>
+	const header = document.querySelector('.site-header');
+	const toggleButton = header?.querySelector('[data-menu-toggle]');
+	const nav = header?.querySelector('#site-nav');
+	const mobileQuery = window.matchMedia('(max-width: 920px)');
+
+	if (header && toggleButton instanceof HTMLButtonElement && nav) {
+		const applyMenuState = (open) => {
+			const isMobile = mobileQuery.matches;
+			const menuOpen = isMobile && open;
+
+			header.classList.toggle('menu-open', menuOpen);
+			toggleButton.setAttribute('aria-expanded', String(menuOpen));
+			toggleButton.setAttribute('aria-label', menuOpen ? 'Sluit menu' : 'Open menu');
+			nav.setAttribute('aria-hidden', String(isMobile ? !menuOpen : false));
+		};
+
+		applyMenuState(false);
+
+		toggleButton.addEventListener('click', () => {
+			applyMenuState(!header.classList.contains('menu-open'));
+		});
+
+		nav.querySelectorAll('a').forEach((link) => {
+			link.addEventListener('click', () => {
+				applyMenuState(false);
+			});
+		});
+
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape') {
+				applyMenuState(false);
+			}
+		});
+
+		document.addEventListener('click', (event) => {
+			if (!header.classList.contains('menu-open')) {
+				return;
+			}
+
+			if (event.target instanceof Node && !header.contains(event.target)) {
+				applyMenuState(false);
+			}
+		});
+
+		mobileQuery.addEventListener('change', () => {
+			applyMenuState(false);
+		});
+	}
+</script>

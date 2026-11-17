@@ -1,0 +1,125 @@
+# Pages CMS gebruikt GitHub als opslag: wijzigingen worden commits in deze repository.
+# Projectfoto's staan in src/assets/projecten en worden door Astro geoptimaliseerd.
+media:
+  - name: projectafbeeldingen
+    label: Projectfoto's
+    input: src/assets/projecten
+    # Relatief pad vanaf de projectbestanden in src/content/projects.
+    output: ../../assets/projecten
+    categories: [image]
+    extensions: [jpg, jpeg, png, webp]
+    rename: safe
+
+content:
+  - name: projecten
+    label: Projecten
+    type: collection
+    path: src/content/projects
+    filename: "{title}.md"
+    format: yaml-frontmatter
+    view:
+      fields: [title, category, region, year, featured]
+      primary: title
+      sort: [year, title]
+      default:
+        sort: year
+        order: desc
+    fields:
+      - name: title
+        label: Titel
+        type: string
+        required: true
+        options:
+          maxlength: 120
+
+      - name: excerpt
+        label: Korte samenvatting
+        type: text
+        required: true
+        options:
+          maxlength: 240
+
+      - name: category
+        label: Categorie
+        type: select
+        required: true
+        options:
+          values:
+            - Kozijnen
+            - Verbouwingen
+            - Maatwerk
+            - Aftimmering
+            - Plafonds
+            - Renovatie deur
+            - Hang- en sluitwerk
+
+      - name: region
+        label: Plaats of regio
+        type: string
+        required: true
+
+      - name: year
+        label: Jaar
+        type: number
+        required: true
+        options:
+          min: 2000
+          max: 2100
+
+      - name: cover
+        label: Coverfoto
+        type: image
+        required: true
+        description: De foto bovenaan het project en op de projectkaarten. Gebruik een unieke naam, bijvoorbeeld project-slug-cover.jpg.
+        options:
+          media: projectafbeeldingen
+          extensions: [jpg, jpeg, png, webp]
+          rename: safe
+
+      - name: gallery
+        label: Fotogalerij
+        type: image
+        description: Upload of selecteer maximaal 40 foto's. Gebruik unieke namen, bijvoorbeeld project-slug-01.jpg.
+        options:
+          media: projectafbeeldingen
+          multiple:
+            max: 40
+          unique: true
+          extensions: [jpg, jpeg, png, webp]
+          rename: safe
+
+      - name: featured
+        label: Uitlichten op de homepage
+        type: boolean
+        default: false
+
+      - name: serviceSlug
+        label: Bijbehorende dienst (optioneel)
+        type: select
+        required: false
+        options:
+          values:
+            - kozijnen
+            - aftimmering
+            - hang-en-sluitwerk
+            - plafonds
+            - scheidingswanden
+            - verbouwingen
+            - maatwerk
+
+      - name: body
+        label: Projectbeschrijving
+        type: rich-text
+        options:
+          format: markdown
+          media: false
+
+settings:
+  content: true
+  commit:
+    identity: app
+    templates:
+      create: "Project aangemaakt: {path}"
+      update: "Project bijgewerkt: {path}"
+      delete: "Project verwijderd: {path}"
+      rename: "Project hernoemd: {oldPath} naar {newPath}"

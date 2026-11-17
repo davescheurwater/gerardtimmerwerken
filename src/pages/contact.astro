@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { emailJsConfig } from '../data/emailjs';
 import { siteConfig } from '../data/site';
 ---
 
 <BaseLayout
-	title="Contact | Gerard Timmerwerken"
-	description="Neem contact op met Gerard Timmerwerken via WhatsApp, telefoon, e-mail of formulier."
+	title="Contact | Willemstein Timmerwerken"
+	description="Neem contact op met Willemstein Timmerwerken via WhatsApp, telefoon, e-mail of formulier."
 >
 	<section class="page-intro">
 		<p class="eyebrow">Contact</p>
@@ -29,8 +30,17 @@ import { siteConfig } from '../data/site';
 
 		<article class="info-block reveal">
 			<h2>Contactformulier</h2>
-			<form action="https://formspree.io/f/your-form-id" method="POST">
-				<input type="hidden" name="_next" value="/bedankt" />
+			<form
+				method="POST"
+				data-emailjs-form
+				data-emailjs-service-id={emailJsConfig.serviceId}
+				data-emailjs-template-id={emailJsConfig.templateId}
+				data-emailjs-public-key={emailJsConfig.publicKey}
+				data-emailjs-success-redirect="/bedankt"
+			>
+				<input type="hidden" name="formulier_type" value="Contactformulier" />
+				<input type="hidden" name="onderwerp" value="Nieuwe contactaanvraag - Willemstein Timmerwerken" />
+				<input type="hidden" name="to_email" value={siteConfig.email} />
 				<label>
 					Naam
 					<input type="text" name="naam" required />
@@ -43,11 +53,13 @@ import { siteConfig } from '../data/site';
 					Bericht
 					<textarea name="bericht" rows="5" required></textarea>
 				</label>
-				<p>
-					Vervang eerst de placeholder <strong>your-form-id</strong> met je eigen Formspree-formulier-ID.
-				</p>
+				<p class="form-status" data-form-status aria-live="polite"></p>
 				<button class="btn" type="submit">Versturen</button>
 			</form>
 		</article>
 	</section>
 </BaseLayout>
+
+<script>
+	import '../scripts/emailjs-form';
+</script>

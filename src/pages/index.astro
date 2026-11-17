@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { services } from '../data/services';
 import { siteConfig } from '../data/site';
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 
 const featuredProjects = (await getCollection('projects'))
@@ -12,13 +13,13 @@ const projectSlug = (id: string) => id.replace(/\.mdx?$/, '');
 ---
 
 <BaseLayout
-	title="Gerard Timmerwerken | Vakmanschap op maat"
-	description="Gerard Timmerwerken uit regio Altena voor kozijnen, aftimmering, plafonds, wanden, verbouwingen en maatwerk timmerwerk."
+	title="Willemstein Timmerwerken | Vakmanschap op maat"
+	description="Willemstein Timmerwerken uit regio Altena voor kozijnen, aftimmering, plafonds, wanden, verbouwingen en maatwerk timmerwerk."
 >
 	<section class="hero">
 		<div class="hero-inner">
 			<div class="hero-copy">
-				<p class="eyebrow">Gerard Timmerwerken</p>
+				<p class="eyebrow">Willemstein Timmerwerken</p>
 				<h1>Strak timmerwerk, persoonlijk uitgevoerd.</h1>
 				<p>
 					Van idee tot afwerking: ik help je met duurzame oplossingen voor jouw woning of
@@ -29,6 +30,34 @@ const projectSlug = (id: string) => id.replace(/\.mdx?$/, '');
 					<a class="btn btn-secondary" href={`https://wa.me/${siteConfig.whatsapp}`}>WhatsApp</a>
 				</div>
 			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="section-head">
+			<h2>Uitgelichte projecten</h2>
+			<a href="/projecten">Alle projecten</a>
+		</div>
+		<div class="grid-3">
+			{featuredProjects.map((project) => (
+				<a
+					class="project-card reveal"
+					href={`/projecten/${projectSlug(project.id)}`}
+					aria-label={`Bekijk project ${project.data.title}`}
+				>
+					<Image
+						src={project.data.cover}
+						alt={project.data.title}
+						loading="lazy"
+						width={Math.min(project.data.cover.width, 720)}
+					/>
+					<div>
+						<h3>{project.data.title}</h3>
+						<p>{project.data.excerpt}</p>
+						<span class="project-card-cta">Bekijk project</span>
+					</div>
+				</a>
+			))}
 		</div>
 	</section>
 
@@ -48,25 +77,6 @@ const projectSlug = (id: string) => id.replace(/\.mdx?$/, '');
 			))}
 		</div>
 	</section>
-
-	<section class="section">
-		<div class="section-head">
-			<h2>Uitgelichte projecten</h2>
-			<a href="/projecten">Alle projecten</a>
-		</div>
-		<div class="grid-3">
-			{featuredProjects.map((project) => (
-				<article class="project-card reveal">
-					<img src={project.data.cover} alt={project.data.title} loading="lazy" />
-					<div>
-						<h3>{project.data.title}</h3>
-						<p>{project.data.excerpt}</p>
-						<a href={`/projecten/${projectSlug(project.id)}`}>Bekijk project</a>
-					</div>
-				</article>
-			))}
-		</div>
-	</section>
 	
 	<section class="region-section section">
 		<div class="section-head">
@@ -74,7 +84,7 @@ const projectSlug = (id: string) => id.replace(/\.mdx?$/, '');
 			<a href="/contact">Neem contact op</a>
 		</div>
 		<div class="region-card">
-			<p>Gerard werkt in de regio rondom Altena en de omliggende plaatsen. Voor een snelle afspraak en een scherpe offerte kun je hieronder direct contact opnemen.</p>
+			<p>Ik werk in de regio rondom Altena en de omliggende plaatsen. Voor een snelle afspraak en een scherpe offerte kun je hieronder direct contact opnemen.</p>
 			<ul class="region-list">
 				{siteConfig.regions.map((region) => <li>{region}</li>)}
 			</ul>

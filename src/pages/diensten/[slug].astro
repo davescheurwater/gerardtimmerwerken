@@ -11,6 +11,9 @@ export function getStaticPaths() {
 }
 
 const { service } = Astro.props;
+const serviceIntro = Array.isArray(service?.intro) ? service.intro : [];
+const serviceDetails = Array.isArray(service?.details) ? service.details : [];
+const serviceApplications = Array.isArray(service?.applications) ? service.applications : [];
 const relatedProjects = (await getCollection('projects')).filter(
 	(item) => item.data.serviceSlug === service.slug,
 );
@@ -18,8 +21,8 @@ const projectSlug = (id: string) => id.replace(/\.mdx?$/, '');
 ---
 
 <BaseLayout
-	title={`${service.title} | Gerard Timmerwerken`}
-	description={`${service.title} door Gerard Timmerwerken in regio Altena en omgeving.`}
+	title={`${service.title} | Willemstein Timmerwerken`}
+	description={`${service.title} door Willemstein Timmerwerken in regio Altena en omgeving.`}
 >
 	<section class="page-intro">
 		<p class="eyebrow">Dienst</p>
@@ -29,14 +32,22 @@ const projectSlug = (id: string) => id.replace(/\.mdx?$/, '');
 
 	<section class="split section">
 		<article class="info-block reveal">
+			<h2>Over deze dienst</h2>
+			{serviceIntro.map((paragraph) => <p>{paragraph}</p>)}
+
 			<h2>Wat je kunt verwachten</h2>
 			<ul>
-				{service.details.map((detail) => <li>{detail}</li>)}
+				{serviceDetails.map((detail) => <li>{detail}</li>)}
 			</ul>
 			<p><a class="btn" href="/offerte">Vraag een offerte aan</a></p>
 		</article>
 
 		<article class="info-block reveal">
+			<h2>Veelgevraagde toepassingen</h2>
+			<ul>
+				{serviceApplications.map((item) => <li>{item}</li>)}
+			</ul>
+
 			<h2>Gerelateerde projecten</h2>
 			{relatedProjects.length > 0 ? (
 				<ul>

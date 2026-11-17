@@ -1,11 +1,11 @@
 export const siteConfig = {
-	companyName: 'Gerard Timmerwerken',
+	companyName: 'Willemstein Timmerwerken',
 	ownerName: 'Gerard Willemstein',
-	phone: '+31600000000',
-	phoneLabel: '06 00 00 00 00',
-	email: 'info@gerardtimmerwerken.nl',
-	whatsapp: '31600000000',
-	instagramUrl: 'https://www.instagram.com/',
+	phone: '+31612672573',
+	phoneLabel: '06 12 67 25 73',
+	email: 'info@willemsteintimmerwerken.nl',
+	whatsapp: '31612672573',
+	instagramUrl: 'https://www.instagram.com/willemsteintimmerwerken/',
 	regions: [
 		'Gemeente Altena',
 		'Gorinchem',

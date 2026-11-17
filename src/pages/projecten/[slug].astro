@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getImage, Image } from 'astro:assets';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -12,9 +13,20 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
+const galleryLightboxImages = await Promise.all(
+	project.data.gallery.map(async (image) => {
+		const optimizedImage = await getImage({
+			src: image,
+			width: Math.min(image.width, 1800),
+			format: 'webp',
+			quality: 85,
+		});
+		return optimizedImage.src;
+	}),
+);
 ---
 
-<BaseLayout title={`${project.data.title} | Gerard Timmerwerken`} description={project.data.excerpt}>
+<BaseLayout title={`${project.data.title} | Willemstein Timmerwerken`} description={project.data.excerpt}>
 	<section class="page-intro">
 		<p class="eyebrow">Project</p>
 		<h1>{project.data.title}</h1>
@@ -23,7 +35,7 @@ const { Content } = await render(project);
 
 	<section class="split section">
 		<article class="info-block reveal">
-			<img src={project.data.cover} alt={project.data.title} style="width:100%;border-radius:.8rem;" />
+			<Image src={project.data.cover} alt={project.data.title} style="width:100%;border-radius:.8rem;" />
 		</article>
 		<article class="info-block reveal">
 			<Content />
@@ -33,20 +45,297 @@ const { Content } = await render(project);
 
 	<section class="section">
 		<h2>Fotogalerij</h2>
-		<div class="grid-3">
-			{project.data.gallery.map((image) => (
-				<img src={image} alt={project.data.title} class="project-gallery-image" loading="lazy" />
+		<div class="grid-3 project-gallery-grid">
+			{project.data.gallery.map((image, index) => (
+				<button
+					type="button"
+					class="project-gallery-item"
+					data-gallery-open
+					data-index={index}
+					aria-label={`Bekijk foto ${index + 1} van ${project.data.gallery.length}`}
+				>
+					<Image
+						src={image}
+						alt={project.data.title}
+						class="project-gallery-image"
+						loading="lazy"
+						width={Math.min(image.width, 720)}
+					/>
+				</button>
 			))}
 		</div>
 	</section>
+
+	<div class="project-lightbox" data-gallery-lightbox hidden>
+		<button type="button" class="project-lightbox-backdrop" data-gallery-close aria-label="Sluit galerij"></button>
+		<div
+			class="project-lightbox-dialog"
+			role="dialog"
+			aria-modal="true"
+			aria-label={`Fotogalerij van ${project.data.title}`}
+		>
+			<button type="button" class="project-lightbox-close" data-gallery-close aria-label="Sluiten">
+				&times;
+			</button>
+			<button
+				type="button"
+				class="project-lightbox-nav project-lightbox-nav-prev"
+				data-gallery-prev
+				aria-label="Vorige foto"
+			>
+				Vorige
+			</button>
+			<img src="" alt={project.data.title} class="project-lightbox-image" data-gallery-image loading="eager" />
+			<button
+				type="button"
+				class="project-lightbox-nav project-lightbox-nav-next"
+				data-gallery-next
+				aria-label="Volgende foto"
+			>
+				Volgende
+			</button>
+			<p class="project-lightbox-counter" data-gallery-counter></p>
+		</div>
+	</div>
 </BaseLayout>
 
 <style>
+	.project-gallery-item {
+		padding: 0;
+		background: none;
+		border: 0;
+		border-radius: 0.8rem;
+		overflow: hidden;
+		cursor: pointer;
+	}
+
+	.project-gallery-item:focus-visible {
+		outline: 3px solid var(--gold);
+		outline-offset: 2px;
+	}
+
 	.project-gallery-image {
+		display: block;
 		width: 100%;
 		height: 200px;
 		object-fit: cover;
 		border-radius: 0.8rem;
-		border: 1px solid rgba(17, 52, 35, 0.1);
+		border: 1px solid rgba(0, 0, 0, 0.14);
+		transition: transform 0.25s ease;
+	}
+
+	.project-gallery-item:hover .project-gallery-image {
+		transform: scale(1.03);
+	}
+
+	.project-lightbox {
+		position: fixed;
+		inset: 0;
+		z-index: 60;
+		display: grid;
+		place-items: center;
+		padding: 1rem;
+	}
+
+	.project-lightbox[hidden] {
+		display: none;
+	}
+
+	.project-lightbox-backdrop {
+		position: absolute;
+		inset: 0;
+		border: 0;
+		background: rgba(0, 0, 0, 0.78);
+		cursor: pointer;
+	}
+
+	.project-lightbox-dialog {
+		position: relative;
+		z-index: 1;
+		width: min(1000px, 92vw);
+		padding: 2.8rem 1rem 2.2rem;
+		border-radius: 1rem;
+		background: #000000;
+		border: 1px solid rgba(196, 121, 41, 0.5);
+		box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+	}
+
+	.project-lightbox-image {
+		display: block;
+		width: 100%;
+		max-height: 74vh;
+		object-fit: contain;
+		border-radius: 0.8rem;
+		background: rgba(0, 0, 0, 0.25);
+	}
+
+	.project-lightbox-close,
+	.project-lightbox-nav {
+		position: absolute;
+		border: 1px solid rgba(255, 255, 255, 0.35);
+		background: rgba(196, 121, 41, 0.16);
+		color: #ffffff;
+		border-radius: 999px;
+		font-weight: 700;
+		cursor: pointer;
+		transition: background 0.2s ease;
+	}
+
+	.project-lightbox-close:hover,
+	.project-lightbox-nav:hover {
+		background: rgba(196, 121, 41, 0.28);
+	}
+
+	.project-lightbox-close {
+		top: 0.7rem;
+		right: 0.7rem;
+		width: 2.2rem;
+		height: 2.2rem;
+		font-size: 1.4rem;
+		line-height: 1;
+	}
+
+	.project-lightbox-nav {
+		top: 50%;
+		transform: translateY(-50%);
+		padding: 0.45rem 0.75rem;
+	}
+
+	.project-lightbox-nav-prev {
+		left: 0.8rem;
+	}
+
+	.project-lightbox-nav-next {
+		right: 0.8rem;
+	}
+
+	.project-lightbox-counter {
+		margin: 0.8rem 0 0;
+		text-align: center;
+		font-weight: 700;
+		color: #ffffff;
+	}
+
+	@media (max-width: 720px) {
+		.project-lightbox-dialog {
+			padding: 2.8rem 0.6rem 1.8rem;
+		}
+
+		.project-lightbox-nav {
+			top: auto;
+			bottom: 0.65rem;
+			transform: none;
+			font-size: 0.85rem;
+		}
+
+		.project-lightbox-nav-prev {
+			left: 0.65rem;
+		}
+
+		.project-lightbox-nav-next {
+			right: 0.65rem;
+		}
 	}
 </style>
+
+<script is:inline define:vars={{ galleryImages: galleryLightboxImages, galleryTitle: project.data.title }}>
+	const lightbox = document.querySelector('[data-gallery-lightbox]');
+	const lightboxImage = lightbox?.querySelector('[data-gallery-image]');
+	const counter = lightbox?.querySelector('[data-gallery-counter]');
+	const openButtons = Array.from(document.querySelectorAll('[data-gallery-open]'));
+	const closeButtons = Array.from(document.querySelectorAll('[data-gallery-close]'));
+	const prevButton = lightbox?.querySelector('[data-gallery-prev]');
+	const nextButton = lightbox?.querySelector('[data-gallery-next]');
+	const closeButton = lightbox?.querySelector('.project-lightbox-close');
+	let currentIndex = 0;
+
+	const hasGallery = Array.isArray(galleryImages) && galleryImages.length > 0;
+
+	function updateImage() {
+		if (!hasGallery || !lightboxImage || !counter) {
+			return;
+		}
+
+		const safeIndex = (currentIndex + galleryImages.length) % galleryImages.length;
+		currentIndex = safeIndex;
+		lightboxImage.src = galleryImages[currentIndex];
+		lightboxImage.alt = `${galleryTitle} foto ${currentIndex + 1}`;
+		counter.textContent = `${currentIndex + 1} / ${galleryImages.length}`;
+
+		if (prevButton instanceof HTMLButtonElement) {
+			prevButton.disabled = galleryImages.length < 2;
+		}
+
+		if (nextButton instanceof HTMLButtonElement) {
+			nextButton.disabled = galleryImages.length < 2;
+		}
+	}
+
+	function openLightbox(index) {
+		if (!lightbox || !hasGallery) {
+			return;
+		}
+
+		currentIndex = index;
+		updateImage();
+		lightbox.hidden = false;
+		document.body.style.overflow = 'hidden';
+
+		if (closeButton instanceof HTMLButtonElement) {
+			closeButton.focus();
+		}
+	}
+
+	function closeLightbox() {
+		if (!lightbox) {
+			return;
+		}
+
+		lightbox.hidden = true;
+		document.body.style.overflow = '';
+	}
+
+	function showNext() {
+		currentIndex += 1;
+		updateImage();
+	}
+
+	function showPrevious() {
+		currentIndex -= 1;
+		updateImage();
+	}
+
+	openButtons.forEach((button) => {
+		button.addEventListener('click', () => {
+			const index = Number(button.getAttribute('data-index') ?? '0');
+			openLightbox(Number.isNaN(index) ? 0 : index);
+		});
+	});
+
+	closeButtons.forEach((button) => {
+		button.addEventListener('click', closeLightbox);
+	});
+
+	prevButton?.addEventListener('click', showPrevious);
+	nextButton?.addEventListener('click', showNext);
+
+	document.addEventListener('keydown', (event) => {
+		if (!lightbox || lightbox.hidden) {
+			return;
+		}
+
+		if (event.key === 'Escape') {
+			closeLightbox();
+			return;
+		}
+
+		if (event.key === 'ArrowLeft') {
+			showPrevious();
+			return;
+		}
+
+		if (event.key === 'ArrowRight') {
+			showNext();
+		}
+	});
+</script>

@@ -1,11 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { emailJsConfig } from '../data/emailjs';
+import { siteConfig } from '../data/site';
 import { services } from '../data/services';
 ---
 
 <BaseLayout
-	title="Offerte aanvragen | Gerard Timmerwerken"
-	description="Vraag vrijblijvend een offerte aan bij Gerard Timmerwerken."
+	title="Offerte aanvragen | Willemstein Timmerwerken"
+	description="Vraag vrijblijvend een offerte aan bij Willemstein Timmerwerken."
 >
 	<section class="page-intro">
 		<p class="eyebrow">Offerte</p>
@@ -18,9 +20,19 @@ import { services } from '../data/services';
 
 	<section class="section">
 		<article class="info-block reveal">
-			<form action="https://formspree.io/f/your-form-id" method="POST" enctype="multipart/form-data">
-				<input type="hidden" name="_subject" value="Nieuwe offerteaanvraag - Gerard Timmerwerken" />
-				<input type="hidden" name="_next" value="/bedankt" />
+			<form
+				class="offerte-form"
+				method="POST"
+				enctype="multipart/form-data"
+				data-emailjs-form
+				data-emailjs-service-id={emailJsConfig.serviceId}
+				data-emailjs-template-id={emailJsConfig.templateId}
+				data-emailjs-public-key={emailJsConfig.publicKey}
+				data-emailjs-success-redirect="/bedankt"
+			>
+				<input type="hidden" name="formulier_type" value="Offerteformulier" />
+				<input type="hidden" name="onderwerp" value="Nieuwe offerteaanvraag - Willemstein Timmerwerken" />
+				<input type="hidden" name="to_email" value={siteConfig.email} />
 				<label>
 					Naam
 					<input type="text" name="naam" required />
@@ -42,6 +54,7 @@ import { services } from '../data/services';
 					<select name="type_klus" required>
 						<option value="">Kies een dienst</option>
 						{services.map((service) => <option value={service.title}>{service.title}</option>)}
+						<option value="Overig">Overig</option>
 					</select>
 				</label>
 				<label>
@@ -54,21 +67,23 @@ import { services } from '../data/services';
 				</label>
 				<label>
 					Omschrijving klus
-					<textarea name="omschrijving" rows="6" required></textarea>
+					<textarea name="bericht" rows="6" required></textarea>
 				</label>
 				<label>
 					Foto/bestand toevoegen (optioneel)
 					<input type="file" name="bijlage" />
 				</label>
 				<label>
-					<input type="checkbox" name="privacy-akkoord" required />
+					<input type="checkbox" name="privacy_akkoord" required />
 					Ik ga akkoord met de verwerking van mijn gegevens volgens de privacyverklaring.
 				</label>
-				<p>
-					Vervang eerst de placeholder <strong>your-form-id</strong> met je eigen Formspree-formulier-ID.
-				</p>
+				<p class="form-status" data-form-status aria-live="polite"></p>
 				<button class="btn" type="submit">Offerte versturen</button>
 			</form>
 		</article>
 	</section>
 </BaseLayout>
+
+<script>
+	import '../scripts/emailjs-form';
+</script>

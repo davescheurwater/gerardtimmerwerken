@@ -1,0 +1,89 @@
+name: Build en deploy naar Strato
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: strato-production-deploy
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Haal repository op
+        uses: actions/checkout@v4
+
+      - name: Stel Node.js in
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installeer dependencies
+        run: npm ci
+
+      - name: Bouw de statische website
+        run: npm run build
+
+      - name: Installeer sshpass voor SFTP-wachtwoordauthenticatie
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes sshpass
+
+      - name: Controleer en pin de Strato-hostsleutel
+        env:
+          STRATO_SFTP_SERVER: ${{ secrets.STRATO_SFTP_SERVER }}
+          STRATO_SFTP_KNOWN_HOSTS: ${{ vars.STRATO_SFTP_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$STRATO_SFTP_SERVER" ]]; then
+            echo "::error::Voeg STRATO_SFTP_SERVER toe als repository secret."
+            exit 1
+          fi
+
+          if [[ -z "$STRATO_SFTP_KNOWN_HOSTS" ]]; then
+            echo "::error::Voeg de geverifieerde SSH-hostsleutel toe als repository variable STRATO_SFTP_KNOWN_HOSTS."
+            exit 1
+          fi
+
+          printf '%s\n' "$STRATO_SFTP_KNOWN_HOSTS" > "$RUNNER_TEMP/strato_known_hosts"
+          chmod 600 "$RUNNER_TEMP/strato_known_hosts"
+
+          if ! ssh-keygen -F "$STRATO_SFTP_SERVER" -f "$RUNNER_TEMP/strato_known_hosts" >/dev/null; then
+            echo "::error::De hostsleutel bevat geen sleutel voor STRATO_SFTP_SERVER."
+            exit 1
+          fi
+
+      - name: Publiceer dist via SFTP
+        env:
+          SSHPASS: ${{ secrets.STRATO_SFTP_PASSWORD }}
+          STRATO_SFTP_SERVER: ${{ secrets.STRATO_SFTP_SERVER }}
+          STRATO_SFTP_USERNAME: ${{ secrets.STRATO_SFTP_USERNAME }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$SSHPASS" || -z "$STRATO_SFTP_USERNAME" ]]; then
+            echo "::error::Voeg STRATO_SFTP_USERNAME en STRATO_SFTP_PASSWORD toe als repository secrets."
+            exit 1
+          fi
+
+          printf '%s\n' 'put -r ./dist/* .' > "$RUNNER_TEMP/sftp_batch"
+          sshpass -e sftp \
+            -b "$RUNNER_TEMP/sftp_batch" \
+            -P 22 \
+            -o BatchMode=no \
+            -o PreferredAuthentications=password,keyboard-interactive \
+            -o PubkeyAuthentication=no \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$RUNNER_TEMP/strato_known_hosts" \
+            -o ConnectTimeout=20 \
+            "$STRATO_SFTP_USERNAME@$STRATO_SFTP_SERVER"

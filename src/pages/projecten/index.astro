@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 
 const projects = await getCollection('projects');
@@ -7,8 +8,8 @@ const projectSlug = (id: string) => id.replace(/\.mdx?$/, '');
 ---
 
 <BaseLayout
-	title="Projecten | Gerard Timmerwerken"
-	description="Bekijk afgeronde timmerprojecten van Gerard Timmerwerken."
+	title="Projecten | Willemstein Timmerwerken"
+	description="Bekijk afgeronde timmerprojecten van Willemstein Timmerwerken."
 >
 	<section class="page-intro">
 		<p class="eyebrow">Projecten</p>
@@ -21,15 +22,24 @@ const projectSlug = (id: string) => id.replace(/\.mdx?$/, '');
 
 	<section class="grid-3 section">
 		{projects.map((project) => (
-			<article class="project-card reveal">
-				<img src={project.data.cover} alt={project.data.title} loading="lazy" />
+			<a
+				class="project-card reveal"
+				href={`/projecten/${projectSlug(project.id)}`}
+				aria-label={`Lees project ${project.data.title}`}
+			>
+				<Image
+					src={project.data.cover}
+					alt={project.data.title}
+					loading="lazy"
+					width={Math.min(project.data.cover.width, 720)}
+				/>
 				<div>
 					<h2>{project.data.title}</h2>
 					<p>{project.data.excerpt}</p>
 					<p>{project.data.region} · {project.data.year}</p>
-					<a href={`/projecten/${projectSlug(project.id)}`}>Lees project</a>
+					<span class="project-card-cta">Lees project</span>
 				</div>
-			</article>
+			</a>
 		))}
 	</section>
 </BaseLayout>

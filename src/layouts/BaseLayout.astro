@@ -6,9 +6,11 @@ import '../styles/global.css';
 interface Props {
 	title: string;
 	description: string;
+	noindex?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, noindex = false } = Astro.props;
+
 ---
 
 <!doctype html>
@@ -17,9 +19,10 @@ const { title, description } = Astro.props;
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content={description} />
+		{noindex && <meta name="robots" content="noindex, follow" />}
 		<meta name="generator" content={Astro.generator} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<link rel="icon" type="image/png" href="/images/branding/gerard-timmerwerken-logo.png" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -36,5 +39,79 @@ const { title, description } = Astro.props;
 			<slot />
 		</main>
 		<Footer />
+		<aside class="cookie-banner" data-cookie-banner aria-labelledby="cookie-title" hidden>
+			<div>
+				<h2 id="cookie-title">Cookies</h2>
+				<p>
+					Met statistische cookies zien we hoe de website wordt gebruikt. Lees meer in onze
+					<a href="/privacy">privacyverklaring</a>.
+				</p>
+			</div>
+			<div class="cookie-actions">
+				<button class="cookie-button cookie-button-secondary" type="button" data-cookie-decline>
+					Weigeren
+				</button>
+				<button class="cookie-button" type="button" data-cookie-accept>Accepteren</button>
+			</div>
+		</aside>
+		<script is:inline>
+			const measurementId = 'G-Z4D8L0V0XN';
+			const cookieConsentKey = 'willemstein-cookie-consent';
+			const cookieBanner = document.querySelector('[data-cookie-banner]');
+			let analyticsLoaded = false;
+			const gtag = (...argumentsList) => {
+				window.dataLayer = window.dataLayer || [];
+				window.dataLayer.push(argumentsList);
+			};
+
+			const loadAnalytics = () => {
+				if (analyticsLoaded) return;
+				analyticsLoaded = true;
+				gtag('js', new Date());
+				gtag('config', measurementId);
+
+				const analyticsScript = document.createElement('script');
+				analyticsScript.async = true;
+				analyticsScript.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+				document.head.append(analyticsScript);
+			};
+
+			const trackContactClick = (method) => {
+				if (!analyticsLoaded) return;
+				gtag('event', 'contact_click', { contact_method: method });
+			};
+
+			const hideBanner = () => cookieBanner?.setAttribute('hidden', '');
+			const showBanner = () => cookieBanner?.removeAttribute('hidden');
+			const savedConsent = localStorage.getItem(cookieConsentKey);
+
+			if (savedConsent === 'accepted') loadAnalytics();
+			if (!savedConsent) showBanner();
+
+			document.querySelector('[data-cookie-accept]')?.addEventListener('click', () => {
+				localStorage.setItem(cookieConsentKey, 'accepted');
+				loadAnalytics();
+				hideBanner();
+			});
+
+			document.querySelector('[data-cookie-decline]')?.addEventListener('click', () => {
+				localStorage.setItem(cookieConsentKey, 'declined');
+				hideBanner();
+			});
+
+			document.querySelectorAll('[data-cookie-settings]').forEach((button) => {
+				button.addEventListener('click', () => {
+					localStorage.removeItem(cookieConsentKey);
+					showBanner();
+				});
+			});
+
+			document.addEventListener('click', (event) => {
+				const link = event.target.closest('a');
+				if (!link) return;
+				if (link.href.startsWith('tel:')) trackContactClick('phone');
+				if (link.href.includes('wa.me/')) trackContactClick('whatsapp');
+			});
+		</script>
 	</body>
 </html>
